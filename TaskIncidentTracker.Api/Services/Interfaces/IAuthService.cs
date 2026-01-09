@@ -7,5 +7,7 @@ namespace TaskIncidentTracker.Api.Services.Interfaces
     {
         Task<bool> RegisterUser(string username, string password, UserRole role);
         Task<(string, UserResponse?)> LoginUser(string username, string password);
+        Task<bool> ChangeUserRole(string adminId, string username, UserRole role);
+        Task<List<UserResponse>> GetAllUsers();
     }
 }

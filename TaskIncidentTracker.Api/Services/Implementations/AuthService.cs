@@ -11,13 +11,40 @@ namespace TaskIncidentTracker.Api.Services.Implementations
         private readonly ApplicationDbContext _context;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtTokenService _jwtTokenService;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(ApplicationDbContext appDbContext, IPasswordHasher passwordHasher, IJwtTokenService jwtTokenService)
+        public AuthService(ApplicationDbContext appDbContext, IPasswordHasher passwordHasher, IJwtTokenService jwtTokenService, ILogger<AuthService> logger)
         {
             _context = appDbContext;
             _passwordHasher = passwordHasher;
             _jwtTokenService = jwtTokenService;
+            _logger = logger;
         }
+
+        public async Task<bool> ChangeUserRole(string adminId, string username, UserRole role)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null)
+            {
+                return false;
+            }
+            user.Role = role;
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"[{DateTime.UtcNow}] User {adminId} has changed user {username}'s role to {role.ToString()}");
+            return true;
+        }
+
+        public async Task<List<UserResponse>> GetAllUsers()
+        {
+            return await _context.Users
+            .Select(u => new UserResponse
+            {
+                Id = u.Id,
+                Username = u.Username
+            })
+            .ToListAsync();
+        }
+
         public async Task<(string, UserResponse?)> LoginUser(string username, string password)
         {
             var normalized = username.Trim().ToLower();
@@ -28,6 +55,7 @@ namespace TaskIncidentTracker.Api.Services.Implementations
             }
             var userResponse = new UserResponse { Id = user.Id , Username = user.Username, Role = user.Role};
             var token = _jwtTokenService.GenerateJwtToken(user);
+            _logger.LogInformation($"[{DateTime.UtcNow}] User {user.Id} - {user.Username} has logged in.");
             return (token, userResponse);
         }
 

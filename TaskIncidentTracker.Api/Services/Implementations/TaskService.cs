@@ -11,13 +11,15 @@ namespace TaskIncidentTracker.Api.Services.Implementations
     public class TaskService : ITaskService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<TaskService> _logger;
 
-        public TaskService(ApplicationDbContext context)
+        public TaskService(ApplicationDbContext context, ILogger<TaskService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        public async Task<TaskItem?> AssignTask(TaskAssignmentRequest req)
+        public async Task<TaskItem?> AssignTask(string managerId, TaskAssignmentRequest req)
         {
             var task = await _context.Tasks
                 .Include(t => t.AssignedTo)
@@ -26,6 +28,7 @@ namespace TaskIncidentTracker.Api.Services.Implementations
             {
                 return null;
             }
+            var logMsg = "["+DateTime.UtcNow+"] User " + managerId+" has assigned the task " + task.Id + " to users with the following Ids: ";
             foreach (int userId in req.UserIds)
             {
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -36,14 +39,16 @@ namespace TaskIncidentTracker.Api.Services.Implementations
                 if (!task.AssignedTo.Any(u => u.Id == userId))
                 {
                     task.AssignedTo.Add(user);
+                    logMsg += userId + ", ";
                 }
             }
             task.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+            _logger.LogInformation(logMsg.Substring(0, logMsg.Length - 2));
             return task;
         }
 
-        public async Task<TaskItem?> ChangeTaskStatus(TaskStatusChangeRequest req)
+        public async Task<TaskItem?> ChangeTaskStatus(string managerId, TaskStatusChangeRequest req)
         {
             var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == req.TaskId);
             if (task == null)
@@ -53,6 +58,7 @@ namespace TaskIncidentTracker.Api.Services.Implementations
             task.Status = req.Status;
             task.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+            _logger.LogInformation($"[{DateTime.UtcNow}] User {managerId} has changed task {task.Id}'s status to {task.Status.ToString()}");
             return task;
         }
 
@@ -69,6 +75,7 @@ namespace TaskIncidentTracker.Api.Services.Implementations
             };
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
+            _logger.LogInformation($"[{DateTime.UtcNow}] User {creatorId} has created task {task.Id} - {task.Title}");
             return task;
         }
     }

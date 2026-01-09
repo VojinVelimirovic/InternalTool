@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskIncidentTracker.Api.DTOs.Auth;
+using TaskIncidentTracker.Api.Models;
 using TaskIncidentTracker.Api.Services.Interfaces;
 
 namespace TaskIncidentTracker.Api.Controllers
@@ -40,24 +41,23 @@ namespace TaskIncidentTracker.Api.Controllers
             return Unauthorized(new { message = "Incorrect username or password." });
         }
 
-        [Authorize]
-        [HttpGet("me")]
-        public async Task<IActionResult> Me()
+        [Authorize(Roles = "Admin")]
+        [HttpPost("change-role")]
+        public async Task<IActionResult> ChangeRole(string username, UserRole role)
         {
-            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var name = User.FindFirstValue(ClaimTypes.Name);
-
-            var role = User.FindFirstValue(ClaimTypes.Role);
-
-            return Ok( new { id, name, role });
+            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _authService.ChangeUserRole(adminId, username, role);
+            if(result)
+                return Ok(new { message = $"{username}'s role successfully changed to {role.ToString()}." });
+            return BadRequest(new { message = "Role change failed."});
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
+        [Authorize(Roles = "Admin, Manager")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers() 
         {
-            return Ok(new { message = "You are admin" });
+            var users = await _authService.GetAllUsers();
+            return Ok(new { users});
         }
     }
 }

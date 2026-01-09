@@ -6,7 +6,7 @@ namespace TaskIncidentTracker.Api.Services.Interfaces
     public interface ITaskService
     {
         Task<TaskItem> CreateTask(string creatorId, TaskCreationRequest taskRequest);
-        Task<TaskItem?> AssignTask(TaskAssignmentRequest req);
-        Task<TaskItem?> ChangeTaskStatus(TaskStatusChangeRequest req);
+        Task<TaskItem?> AssignTask(string managerId, TaskAssignmentRequest req);
+        Task<TaskItem?> ChangeTaskStatus(string managerId, TaskStatusChangeRequest req);
     }
 }

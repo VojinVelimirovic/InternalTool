@@ -20,7 +20,7 @@ namespace TaskIncidentTracker.Api.Controllers
 
         [HttpPost("create")]
         [Authorize]
-        public async Task<ActionResult> Create(TaskCreationRequest task)
+        public async Task<IActionResult> Create(TaskCreationRequest task)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var createdTask = await _taskService.CreateTask(id, task);
@@ -33,9 +33,10 @@ namespace TaskIncidentTracker.Api.Controllers
 
         [HttpPost("assign")]
         [Authorize(Roles = "Manager")]
-        public async Task<ActionResult> Assign(TaskAssignmentRequest req)
+        public async Task<IActionResult> Assign(TaskAssignmentRequest req)
         {
-            var assignedTask = await _taskService.AssignTask(req);
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var assignedTask = await _taskService.AssignTask(id, req);
             if (assignedTask == null)
             {
                 return BadRequest();
@@ -45,9 +46,10 @@ namespace TaskIncidentTracker.Api.Controllers
 
         [HttpPost("change-status")]
         [Authorize(Roles = "Manager")]
-        public async Task<ActionResult> ChangeStatus(TaskStatusChangeRequest req)
+        public async Task<IActionResult> ChangeStatus(TaskStatusChangeRequest req)
         {
-            var changedTask = await _taskService.ChangeTaskStatus(req);
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var changedTask = await _taskService.ChangeTaskStatus(id, req);
             if (changedTask == null)
             {
                 return BadRequest();
