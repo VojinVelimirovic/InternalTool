@@ -419,3 +419,12 @@ FodyWeavers.xsd
 
 # Project documentation
 specification.docx
+
+# App settings with secrets
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
+
+# Docker compose with secrets
+docker-compose.yml
+!docker-compose.example.yml
