@@ -60,7 +60,7 @@ namespace TaskIncidentTracker.Api.Services.Implementations
             return (token, userResponse);
         }
 
-        public async Task<bool> RegisterUser(string username, string password, UserRole role)
+        public async Task<bool> RegisterUser(string username, string password)
         {
             var normalized = username.Trim().ToLower();
             if (await _context.Users.AnyAsync(u => u.Username == normalized))
@@ -68,7 +68,7 @@ namespace TaskIncidentTracker.Api.Services.Implementations
                 return false;
             }
 
-            var user = new User { Username = username.Trim().ToLower(), PasswordHash = _passwordHasher.HashPassword(password), Role = role, CreatedAt = DateTime.UtcNow };
+            var user = new User { Username = username.Trim().ToLower(), PasswordHash = _passwordHasher.HashPassword(password), CreatedAt = DateTime.UtcNow };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

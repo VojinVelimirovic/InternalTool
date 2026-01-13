@@ -22,7 +22,7 @@ namespace TaskIncidentTracker.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserRequest request)
         {
-            var result = await _authService.RegisterUser(request.Username, request.Password, request.Role);
+            var result = await _authService.RegisterUser(request.Username, request.Password);
             if (result)
             {
                 return Ok(new { message = "Registration successful." });   
