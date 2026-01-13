@@ -36,7 +36,7 @@ namespace TaskIncidentTracker.Api.Controllers
             var (token, userResponse) = await _authService.LoginUser(request.Username, request.Password);
             if (userResponse != null)
             {
-                return Ok( new { jwtToken = token, message = "Login successful.", data = userResponse });
+                return Ok( new { accessToken = token, message = "Login successful.", data = userResponse });
             }
             return Unauthorized(new { message = "Incorrect username or password." });
         }
