@@ -21,3 +21,22 @@ export const createTask = async (task) => {
 
   return response.json();
 };
+
+export const getMyTasks = async (page = 1, pageSize = 5) => {
+  const token = getToken();
+
+  const response = await fetch(`${BASE_URL}/my?page=${page}&pageSize=${pageSize}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "Failed to fetch tasks");
+  }
+
+  return response.json();
+};

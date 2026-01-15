@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import CreateTask from "../pages/CreateTask";
+import MyTasks from "../pages/MyTasks";
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRouter() {
@@ -12,6 +13,15 @@ export default function AppRouter() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route 
+          path="/my-tasks" 
+          element={
+            <ProtectedRoute>
+              <MyTasks />
+            </ProtectedRoute>
+          } 
+        />
 
         <Route 
           path="/create-task" 

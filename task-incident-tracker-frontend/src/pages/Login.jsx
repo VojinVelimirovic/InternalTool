@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "../components/common/Button";
 import { login } from "../api/auth";
 import { saveToken } from "../utils/authStorage";
+import "../styles/global.css";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -17,39 +17,43 @@ export default function Login() {
     try {
       const res = await login(username, password);
       saveToken(res.accessToken);
-      navigate("/create-task");
+      navigate("/my-tasks");
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "100px auto" }}>
+    <div className="page-content">
       <h2>Login</h2>
 
       <form onSubmit={handleLogin}>
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <input
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-        <Button type="submit">Login</Button>
+        <button type="submit">Login</button>
       </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
-      <p>
-        Don’t have an account?{" "}
+      <p className="auth-footer">
+        Don't have an account?{" "}
         <Link to="/register">Register here</Link>
       </p>
     </div>

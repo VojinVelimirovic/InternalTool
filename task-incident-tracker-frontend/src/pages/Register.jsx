@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "../components/common/Button";
 import { register } from "../api/auth";
 import { saveToken } from "../utils/authStorage";
+import "../styles/global.css";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -17,38 +17,42 @@ export default function Register() {
     try {
       const res = await register(username, password);
       saveToken(res.accessToken);
-      navigate("/create-task");
+      navigate("/my-tasks");
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "100px auto" }}>
+    <div className="page-content">
       <h2>Register</h2>
 
       <form onSubmit={handleRegister}>
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <input
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-        <Button type="submit">Register</Button>
+        <button type="submit">Register</button>
       </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
-      <p>
+      <p className="auth-footer">
         Already have an account?{" "}
         <Link to="/login">Login here</Link>
       </p>
