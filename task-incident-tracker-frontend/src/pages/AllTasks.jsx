@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/layout/Navbar";
 import TaskModal from "../components/layout/TaskModal";
 import { getAllTasks, assignTask, changeTaskStatus } from "../api/tasks";
-import { getAllUsers } from "../api/auth";
+import { getAllUsers } from "../api/users";
 import "../styles/global.css";
 import "../styles/MyTasks.css";
 

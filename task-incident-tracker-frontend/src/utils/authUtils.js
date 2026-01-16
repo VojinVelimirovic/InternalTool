@@ -15,7 +15,7 @@ export const getUserRole = () => {
 
 export const isManager = () => {
   const role = getUserRole();
-  return role === "Manager" || role === "Admin";
+  return role === "Manager";
 };
 
 export const isAdmin = () => {

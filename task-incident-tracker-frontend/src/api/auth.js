@@ -28,22 +28,3 @@ export async function register(username, password) {
 
   return res.json();
 }
-
-export const getAllUsers = async () => {
-  const token = getToken();
-
-  const response = await fetch(`${API_URL}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || "Failed to fetch users");
-  }
-
-  return response.json();
-};

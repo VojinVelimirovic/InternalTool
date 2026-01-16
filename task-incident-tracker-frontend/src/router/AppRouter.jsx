@@ -4,8 +4,10 @@ import Register from "../pages/Register";
 import CreateTask from "../pages/CreateTask";
 import MyTasks from "../pages/MyTasks";
 import AllTasks from "../pages/AllTasks";
+import ManageUsers from "../pages/ManageUsers";
 import ProtectedRoute from "./ProtectedRoute";
 import ManagerRoute from "./ManagerRoute";
+import AdminRoute from "./AdminRoute";
 
 export default function AppRouter() {
   return (
@@ -40,6 +42,15 @@ export default function AppRouter() {
             <ManagerRoute>
               <AllTasks />
             </ManagerRoute>
+          } 
+        />
+
+        <Route 
+          path="/manage-users" 
+          element={
+            <AdminRoute>
+              <ManageUsers />
+            </AdminRoute>
           } 
         />
       </Routes>

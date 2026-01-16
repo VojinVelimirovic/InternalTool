@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { removeToken } from "../../utils/authStorage";
-import { isManager } from "../../utils/authUtils";
+import { isManager, isAdmin } from "../../utils/authUtils";
 import "../../styles/Navbar.css";
 
 export default function Navbar() {
@@ -12,6 +12,7 @@ export default function Navbar() {
   };
 
   const managerAccess = isManager();
+  const adminAccess = isAdmin();
 
   return (
     <nav>
@@ -22,6 +23,9 @@ export default function Navbar() {
             <button onClick={() => navigate("/all-tasks")}>All Tasks</button>
           )}
           <button onClick={() => navigate("/create-task")}>Create Task</button>
+          {adminAccess && (
+            <button onClick={() => navigate("/manage-users")}>Manage Users</button>
+          )}
         </div>
         <div className="nav-right">
           <button onClick={handleLogout}>Log out</button>
