@@ -1,5 +1,7 @@
-const API_URL = "http://localhost:5000/api/auth";
+import { API_BASE_URL } from "../config/api";
 import { getToken } from "../utils/authStorage";
+
+const API_URL = `${API_BASE_URL}/auth`;
 
 export async function login(username, password) {
   const res = await fetch(`${API_URL}/login`, {

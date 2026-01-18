@@ -9,10 +9,23 @@ using Microsoft.IdentityModel.Tokens;
 using TaskIncidentTracker.Api.Mappers;
 using TaskIncidentTracker.Api.Common;
 
+var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("DATABASE_URL environment variable is not set.");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
@@ -20,7 +33,17 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskMapper, TaskMapper>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 
-var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!);
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+
+if (string.IsNullOrEmpty(jwtSecret) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))
+{
+    throw new InvalidOperationException(
+        "JWT configuration missing. Set JWT_SECRET, JWT_ISSUER, and JWT_AUDIENCE.");
+}
+
+var key = Encoding.UTF8.GetBytes(jwtSecret);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -35,8 +58,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
@@ -50,6 +73,9 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var frontendOrigin = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:3000";
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
@@ -59,14 +85,14 @@ builder.Services.AddCors(options =>
                 "http://localhost:3000",
                 "http://127.0.0.1:3000",
                 "http://tasktracker-frontend",
-                "http://tasktracker-frontend:80"
+                "http://tasktracker-frontend:80",
+                frontendOrigin
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });
 });
-
 
 var app = builder.Build();
 
@@ -92,7 +118,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 app.UseHttpsRedirection();
 app.UseCors("FrontendPolicy");

@@ -9,7 +9,6 @@
 *.user
 *.userosscache
 *.sln.docstates
-*.env
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -420,11 +419,16 @@ FodyWeavers.xsd
 # Project documentation
 specification.docx
 
-# App settings with secrets
-appsettings.json
-appsettings.*.json
-!appsettings.example.json
+# Environment variables with secrets
+.env
+.env.local
+.env.development
+.env.production
+# But keep example files
+!.env.example
 
-# Docker compose with secrets
-docker-compose.yml
-!docker-compose.example.yml
+# App settings - base files are safe to commit, but ignore environment-specific ones
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+# Keeping the base appsettings.json as it contains no secrets

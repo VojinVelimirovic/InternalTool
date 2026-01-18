@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: ./TaskIncidentTracker.Api
+      dockerfile: Dockerfile
+    container_name: tasktracker-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=http://+:8080
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
+      - FRONTEND_URL=${FRONTEND_URL}
+    ports:
+      - "5000:8080"
+    networks:
+      - tasktracker-network
+    restart: on-failure
+
+  frontend:
+    build:
+      context: ./task-incident-tracker-frontend
+      dockerfile: Dockerfile
+    container_name: tasktracker-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - tasktracker-network
+    restart: on-failure
+
+networks:
+  tasktracker-network:
+    driver: bridge

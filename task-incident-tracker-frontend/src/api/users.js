@@ -1,11 +1,12 @@
+import { API_BASE_URL } from "../config/api";
 import { getToken } from "../utils/authStorage";
 
-const BASE_URL = "http://localhost:5000/api/auth";
+const API_URL = `${API_BASE_URL}/auth`;
 
 export const getAllUsers = async () => {
   const token = getToken();
 
-  const response = await fetch(`${BASE_URL}`, {
+  const response = await fetch(`${API_URL}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -24,7 +25,7 @@ export const getAllUsers = async () => {
 export const changeUserRole = async (username, role) => {
   const token = getToken();
 
-  const response = await fetch(`${BASE_URL}/change-role?username=${username}&role=${role}`, {
+  const response = await fetch(`${API_URL}/change-role?username=${username}&role=${role}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
