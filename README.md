@@ -45,7 +45,7 @@ The application has three distinct user roles, each with different permissions:
    - Can view all tasks in the system
 
 3. **Admin (Role: 0)**
-   - All Manager permissions
+   - All User permissions
    - Can change user roles
    - Full system access
 
